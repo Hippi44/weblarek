@@ -36,14 +36,10 @@ export interface IBuyer {
 }
 
 // Тип данных отправляемых на сервер
-export interface IOrderRequest {
-  payment: TPayment;
-  email: string;
-  phone: string;
-  address: string;
-  total: number;
-  items: string[];
-}
+export interface IOrderRequest extends IBuyer {
+  total: number,
+   items: string[]
+} 
 
 // Тип данных получаемых от сервера
 export interface IOrderResponse {

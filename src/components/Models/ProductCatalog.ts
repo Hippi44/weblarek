@@ -1,13 +1,8 @@
-import { IProduct } from '../../../types/index.ts';
+import { IProduct } from '../../types/index.ts';
 
 export class ProductCatalog {
-  private items: IProduct[];
-  private selectedCard?: IProduct | null;
-
-  constructor(items: IProduct[] = []) {
-    this.items = items;
-    this.selectedCard = null;
-  }
+  private items: IProduct[] = [];
+  private selectedCard?: IProduct | null = null;
 
   setItems(items: IProduct[]): void {
     this.items = items;

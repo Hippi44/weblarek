@@ -1,17 +1,10 @@
-import { IBuyer, ValidationErrors } from '../../../types/index.ts';
+import { IBuyer, ValidationErrors } from '../../types/index.ts';
 
 export class Customer {
   payment: IBuyer['payment'] = '';
   address: string = '';
   phone: string = '';
   email: string = '';
-
-  constructor(data: Partial<IBuyer> = {}) {
-    this.payment = data.payment || '';
-    this.address = data.address || '';
-    this.phone = data.phone || '';
-    this.email = data.email || '';
-  }
 
   setData(data: Partial<IBuyer>): void {
     if (data.payment !== undefined) this.payment = data.payment;

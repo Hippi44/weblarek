@@ -2,8 +2,8 @@ import {
   IProduct,
   IOrderResponse,
   IOrderRequest,
-} from '../../../types/index.ts';
-import { Api } from '../Api.ts';
+} from '../../types/index.ts';
+import { Api } from '../base/Api.ts';
 
 // Класс API для работы с товарами и заказами на сервере
 export class ProductApi {
