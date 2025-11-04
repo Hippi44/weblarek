@@ -22,8 +22,8 @@ export class OrderForm extends FormBase<{ address: string; payment: string }> {
 
   private selectPayment(name: string) {
     this.paymentButtons.forEach((b) => b.classList.toggle('button_alt-active', b.name === name));
-    const hidden = ensureElement<HTMLInputElement>('input[name="payment"]', this.formEl);
-    hidden.value = name;
+    // Хранение выбранного способа оплаты осуществляется классом через активную кнопку;
+    // скрытое поле в шаблоне не требуется.
   }
 
   protected getValue(): Record<string, unknown> {

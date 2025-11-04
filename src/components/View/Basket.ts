@@ -17,7 +17,15 @@ export class Basket extends Component<unknown> {
   }
 
   setItems(items: HTMLElement[]) {
-    this.listEl.replaceChildren(...items);
+    if (!items.length) {
+      const empty = document.createElement('li');
+      empty.className = 'basket__empty';
+      empty.textContent = 'Корзина пуста';
+      this.listEl.replaceChildren(empty);
+      this.setSubmitDisabled(true);
+    } else {
+      this.listEl.replaceChildren(...items);
+    }
   }
 
   setTotal(price: number) {

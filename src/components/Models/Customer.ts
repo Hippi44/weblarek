@@ -44,16 +44,28 @@ export class Customer {
       errors.payment = 'Не выбран вид оплаты';
     }
 
-    if (!this.address) {
+    // Адрес: минимальная длина для вменяемости
+    const trimmedAddress = (this.address || '').trim();
+    if (!trimmedAddress) {
       errors.address = 'Укажите адрес';
+    } else if (trimmedAddress.length < 5) {
+      errors.address = 'Адрес слишком короткий';
     }
 
-    if (!this.phone) {
+    // Телефон: допускаем форматы с пробелами/скобками/дефисами, проверяем 11 цифр и ведущую 7/8
+    const digitsPhone = (this.phone || '').replace(/\D/g, '');
+    if (!digitsPhone) {
       errors.phone = 'Укажите телефон';
+    } else if (!(digitsPhone.length === 11 && /^(7|8)/.test(digitsPhone))) {
+      errors.phone = 'Некорректный телефон';
     }
 
-    if (!this.email) {
+    // Email: простая проверка формата user@domain.tld
+    const trimmedEmail = (this.email || '').trim();
+    if (!trimmedEmail) {
       errors.email = 'Укажите email';
+    } else if (!/^\S+@\S+\.[\w-]+$/.test(trimmedEmail)) {
+      errors.email = 'Некорректный email';
     }
 
     return errors;

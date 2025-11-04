@@ -9,9 +9,14 @@ export abstract class FormBase<TValue extends object> extends Component<TValue> 
 
   protected constructor(protected readonly events: IEvents, container: HTMLElement, formSelector = 'form') {
     super(container);
-    this.formEl = ensureElement<HTMLFormElement>(formSelector, container);
-    this.submitButton = ensureElement<HTMLButtonElement>('button[type="submit"]', container);
-    this.errorsEl = ensureElement<HTMLElement>('.form__errors', container);
+    // If the container itself is the form element (common for templates with <form> as root),
+    // use it directly; otherwise, search within the container.
+    this.formEl = (container.matches && container.matches(formSelector))
+      ? (container as HTMLFormElement)
+      : ensureElement<HTMLFormElement>(formSelector, container);
+    // Query submit and errors within the resolved form element
+    this.submitButton = ensureElement<HTMLButtonElement>('button[type="submit"]', this.formEl);
+    this.errorsEl = ensureElement<HTMLElement>('.form__errors', this.formEl);
 
     this.formEl.addEventListener('input', () => {
       this.events.emit('form:change', { form: this.formEl.name, value: this.getValue() });
