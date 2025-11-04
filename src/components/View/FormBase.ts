@@ -1,6 +1,7 @@
 import { Component } from '../base/Component';
 import { IEvents } from '../base/Events';
 import { ensureElement } from '../../utils/utils';
+import { AppEvent } from '../../types';
 
 export abstract class FormBase<TValue extends object> extends Component<TValue> {
   protected readonly formEl: HTMLFormElement;
@@ -19,12 +20,12 @@ export abstract class FormBase<TValue extends object> extends Component<TValue> 
     this.errorsEl = ensureElement<HTMLElement>('.form__errors', this.formEl);
 
     this.formEl.addEventListener('input', () => {
-      this.events.emit('form:change', { form: this.formEl.name, value: this.getValue() });
+      this.events.emit(AppEvent.FormChange, { form: this.formEl.name, value: this.getValue() });
     });
 
     this.formEl.addEventListener('submit', (e) => {
       e.preventDefault();
-      this.events.emit('form:submit', { form: this.formEl.name, value: this.getValue() });
+      this.events.emit(AppEvent.FormSubmit, { form: this.formEl.name, value: this.getValue() });
     });
   }
 

@@ -1,12 +1,12 @@
-import { IProduct } from '../../types/index.ts';
+import { AppEvent, IProduct } from '../../types/index.ts';
 import { EventEmitter } from '../base/Events.ts';
 
 export class ShoppingCart {
   private items: IProduct[] = [];
   protected events: EventEmitter;
 
-  constructor(events?: EventEmitter) {
-    this.events = events || new EventEmitter();
+  constructor(events: EventEmitter) {
+    this.events = events;
   }
 
   getItems(): IProduct[] {
@@ -15,17 +15,17 @@ export class ShoppingCart {
 
   addItem(product: IProduct): void {
     this.items.push(product);
-    this.events.emit('cart:changed', { items: this.items });
+    this.events.emit(AppEvent.CartChanged, { items: this.items });
   }
 
   removeItem(productId: string): void {
     this.items = this.items.filter(item => item.id !== productId);
-    this.events.emit('cart:changed', { items: this.items });
+    this.events.emit(AppEvent.CartChanged, { items: this.items });
   }
 
   clear(): void {
     this.items = [];
-    this.events.emit('cart:changed', { items: this.items });
+    this.events.emit(AppEvent.CartChanged, { items: this.items });
   }
 
   getTotalPrice(): number {

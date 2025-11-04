@@ -1,6 +1,7 @@
 import { Component } from '../base/Component';
 import { IEvents } from '../base/Events';
 import { ensureElement } from '../../utils/utils';
+import { AppEvent } from '../../types';
 
 export class Header extends Component<unknown> {
   private readonly basketButton: HTMLButtonElement;
@@ -11,7 +12,7 @@ export class Header extends Component<unknown> {
     this.basketButton = ensureElement<HTMLButtonElement>('.header__basket', container);
     this.counterEl = ensureElement<HTMLElement>('.header__basket-counter', container);
 
-    this.basketButton.addEventListener('click', () => this.events.emit('basket:open'));
+    this.basketButton.addEventListener('click', () => this.events.emit(AppEvent.BasketOpen));
   }
 
   setCounter(value: number) {

@@ -1,5 +1,6 @@
 import { IEvents } from '../base/Events';
 import { ensureElement } from '../../utils/utils';
+import { AppEvent } from '../../types';
 
 export class Modal {
   private readonly root: HTMLElement;
@@ -23,13 +24,13 @@ export class Modal {
     this.setContent(content);
     this.root.classList.add('modal_active');
     this.pageWrapper.classList.add('page__wrapper_locked');
-    this.events.emit('modal:open');
+    this.events.emit(AppEvent.ModalOpen);
   }
 
   close() {
     this.root.classList.remove('modal_active');
     this.pageWrapper.classList.remove('page__wrapper_locked');
-    this.events.emit('modal:close');
+    this.events.emit(AppEvent.ModalClose);
   }
 
   setContent(content: HTMLElement) {

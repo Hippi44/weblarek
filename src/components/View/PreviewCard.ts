@@ -1,6 +1,7 @@
 import { CardBase, CardCommonData } from './CardBase';
 import { IEvents } from '../base/Events';
 import { ensureElement } from '../../utils/utils';
+import { AppEvent } from '../../types';
 
 export class PreviewCard extends CardBase<CardCommonData> {
   private readonly addButton: HTMLButtonElement;
@@ -12,8 +13,8 @@ export class PreviewCard extends CardBase<CardCommonData> {
     this.addButton.addEventListener('click', () => {
       const id = (this.container as HTMLElement).dataset.id;
       if (!id) return;
-      if (this.inCart) this.events.emit('card:remove', { id });
-      else this.events.emit('card:add', { id });
+      if (this.inCart) this.events.emit(AppEvent.CardRemove, { id });
+      else this.events.emit(AppEvent.CardAdd, { id });
     });
   }
 

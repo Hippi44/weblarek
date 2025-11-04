@@ -46,3 +46,39 @@ export interface IOrderResponse {
   total: number;
   id: string[];
 }
+
+export enum AppEvent {
+  ItemsChanged = 'items:changed',
+  CartChanged = 'cart:changed',
+  CardOpen = 'card:open',
+  CardAdd = 'card:add',
+  CardRemove = 'card:remove',
+  CardSelected = 'card:selected',
+  CustomerChanged = 'customer:changed',
+  PaymentSelect = 'payment:select',
+  FormChange = 'form:change',
+  FormSubmit = 'form:submit',
+  BasketOpen = 'basket:open',
+  BasketOrder = 'basket:order',
+  ModalOpen = 'modal:open',
+  ModalClose = 'modal:close',
+  SuccessClose = 'success:close',
+}
+
+export const EVENTS = {
+  ItemsChanged: AppEvent.ItemsChanged,
+  CartChanged: AppEvent.CartChanged,
+  CardOpen: AppEvent.CardOpen,
+  CardAdd: AppEvent.CardAdd,
+  CardRemove: AppEvent.CardRemove,
+  CardSelected: AppEvent.CardSelected,
+  CustomerChanged: AppEvent.CustomerChanged,
+  PaymentSelect: AppEvent.PaymentSelect,
+  FormChange: AppEvent.FormChange,
+  FormSubmit: AppEvent.FormSubmit,
+  BasketOpen: AppEvent.BasketOpen,
+  BasketOrder: AppEvent.BasketOrder,
+  ModalOpen: AppEvent.ModalOpen,
+  ModalClose: AppEvent.ModalClose,
+  SuccessClose: AppEvent.SuccessClose,
+} as const;

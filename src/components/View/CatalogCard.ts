@@ -1,5 +1,6 @@
 import { CardBase, CardCommonData } from './CardBase';
 import { IEvents } from '../base/Events';
+import { AppEvent } from '../../types';
 
 export class CatalogCard extends CardBase<CardCommonData> {
   private readonly rootButton: HTMLButtonElement;
@@ -10,7 +11,7 @@ export class CatalogCard extends CardBase<CardCommonData> {
 
     this.rootButton.addEventListener('click', () => {
       const id = (this.container as HTMLElement).dataset.id;
-      if (id) this.events.emit('card:open', { id });
+      if (id) this.events.emit(AppEvent.CardOpen, { id });
     });
   }
 

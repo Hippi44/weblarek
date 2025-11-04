@@ -1,6 +1,7 @@
 import { Component } from '../base/Component';
 import { IEvents } from '../base/Events';
 import { ensureElement } from '../../utils/utils';
+import { AppEvent } from '../../types';
 
 export class Basket extends Component<unknown> {
   private readonly listEl: HTMLElement;
@@ -13,7 +14,7 @@ export class Basket extends Component<unknown> {
     this.totalEl = ensureElement<HTMLElement>('.basket__price', container);
     this.submitButton = ensureElement<HTMLButtonElement>('.basket__button', container);
 
-    this.submitButton.addEventListener('click', () => this.events.emit('basket:order'));
+    this.submitButton.addEventListener('click', () => this.events.emit(AppEvent.BasketOrder));
   }
 
   setItems(items: HTMLElement[]) {

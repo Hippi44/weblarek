@@ -1,6 +1,7 @@
 import { FormBase } from './FormBase';
 import { IEvents } from '../base/Events';
 import { ensureElement } from '../../utils/utils';
+import { AppEvent } from '../../types';
 
 export class OrderForm extends FormBase<{ address: string; payment: string }> {
   private readonly buttonsWrap: HTMLElement;
@@ -14,8 +15,8 @@ export class OrderForm extends FormBase<{ address: string; payment: string }> {
     this.paymentButtons.forEach((btn) => {
       btn.addEventListener('click', () => {
         this.selectPayment(btn.name);
-        this.events.emit('payment:select', { payment: btn.name });
-        this.events.emit('form:change', { form: this.formEl.name, value: this.getValue() });
+        this.events.emit(AppEvent.PaymentSelect, { payment: btn.name });
+        this.events.emit(AppEvent.FormChange, { form: this.formEl.name, value: this.getValue() });
       });
     });
   }
