@@ -1,16 +1,23 @@
 import { IBuyer, ValidationErrors } from '../../types/index.ts';
+import { EventEmitter } from '../base/Events.ts';
 
 export class Customer {
   payment: IBuyer['payment'] = '';
   address: string = '';
   phone: string = '';
   email: string = '';
+  protected events: EventEmitter;
+
+  constructor(events?: EventEmitter) {
+    this.events = events || new EventEmitter();
+  }
 
   setData(data: Partial<IBuyer>): void {
     if (data.payment !== undefined) this.payment = data.payment;
     if (data.address !== undefined) this.address = data.address;
     if (data.phone !== undefined) this.phone = data.phone;
     if (data.email !== undefined) this.email = data.email;
+    this.events.emit('customer:changed', { data: this.getData() });
   }
 
   getData(): IBuyer {
@@ -27,6 +34,7 @@ export class Customer {
     this.address = '';
     this.phone = '';
     this.email = '';
+    this.events.emit('customer:changed', { data: this.getData() });
   }
 
   validateData(): ValidationErrors {

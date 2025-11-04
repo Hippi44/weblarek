@@ -1,11 +1,18 @@
 import { IProduct } from '../../types/index.ts';
+import { EventEmitter } from '../base/Events.ts';
 
 export class ProductCatalog {
   private items: IProduct[] = [];
   private selectedCard?: IProduct | null = null;
+  protected events: EventEmitter;
+
+  constructor(events?: EventEmitter) {
+    this.events = events || new EventEmitter();
+  }
 
   setItems(items: IProduct[]): void {
     this.items = items;
+    this.events.emit('items:changed', { items: this.items });
   }
 
   getItems(): IProduct[] {
@@ -19,6 +26,7 @@ export class ProductCatalog {
 
   setSelectedCard(card: IProduct): void {
     this.selectedCard = card;
+    this.events.emit('card:selected', { card: this.selectedCard });
   }
 
   getSelectedCard(): IProduct | null {

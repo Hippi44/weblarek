@@ -5,6 +5,9 @@ import { Customer } from './components/Models/Customer.ts';
 import { apiProducts } from './utils/data.ts';
 import { ProductApi } from './components/Models/ProductApi.ts';
 import { API_URL } from './utils/constants.ts';
+import { EventEmitter } from './components/base/Events.ts';
+import { Header, Gallery, Modal, CatalogCard, PreviewCard } from './components/View';
+import { cloneTemplate, ensureElement } from './utils/utils.ts';
 
 // Создаем модель каталога товаров и наполняем ее начальными товарами из apiProducts
 const productCatalogModel = new ProductCatalog();
@@ -80,3 +83,56 @@ productApi
   .catch(error => { 
     console.error('Ошибка при получении товаров с сервера:', error); 
   }); 
+
+// === Тестирование View-слоя ===
+const events = new EventEmitter();
+
+// Инстансы основных представлений
+const header = new Header(events, ensureElement<HTMLElement>('.header'));
+const gallery = new Gallery(ensureElement<HTMLElement>('.gallery'));
+const modal = new Modal(events, ensureElement<HTMLElement>('#modal-container'));
+
+// Обновляем счётчик корзины из модели
+header.setCounter(shoppingCartModel.getTotalItemsCount());
+
+// Рендер одной карточки каталога и навешивание событий
+const tplCatalog = ensureElement<HTMLTemplateElement>('#card-catalog');
+const catalogCard = new CatalogCard(events, cloneTemplate<HTMLElement>(tplCatalog));
+const first = apiProducts.items[0];
+catalogCard.render({
+  id: first.id,
+  title: first.title,
+  image: first.image,
+  price: first.price,
+  category: first.category,
+});
+gallery.setCatalog([catalogCard.render()]);
+
+// Подписки на события от представлений для простого теста взаимодействия
+events.on<{ id: string }>('card:open', ({ id }) => {
+  const item = productCatalogModel.getItem(id);
+  if (!item) return;
+  const tplPreview = ensureElement<HTMLTemplateElement>('#card-preview');
+  const preview = new PreviewCard(events, cloneTemplate<HTMLElement>(tplPreview));
+  preview.render({
+    id: item.id,
+    title: item.title,
+    image: item.image,
+    price: item.price,
+    category: item.category,
+  });
+  modal.open(preview.render());
+});
+
+events.on<{ id: string }>('card:add', ({ id }) => {
+  const item = productCatalogModel.getItem(id);
+  if (!item) return;
+  if (!shoppingCartModel.contains(id)) {
+    shoppingCartModel.addItem(item);
+    header.setCounter(shoppingCartModel.getTotalItemsCount());
+  }
+});
+
+events.on('modal:close', () => {
+  // no-op, просто демонстрация генерации события
+});
