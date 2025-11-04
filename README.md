@@ -210,3 +210,109 @@ address: string;
 `postOrder(orderData: IOrderRequest): Promise<IOrderResponse>` - выполняет POST запрос на эндпоинт `/order` и отправляет данные заказа на сервер. Принимает объект с данными покупателя, общей суммой заказа и списком товаров, использует метод `post` класса Api для отправки данных. Метод будет использоваться во второй части проектной работы для оформления заказов.
 
 Класс демонстрирует принцип композиции: вместо наследования от класса Api, он содержит экземпляр Api как часть своей структуры, что обеспечивает более гибкую архитектуру и возможность переиспользования функциональности базового класса.
+
+## Слой Представления (View)
+
+Ниже описаны классы слоя Представления, которые отвечают за конкретные участки разметки и не содержат бизнес-логики. Все взаимодействия инициируются событиями, которые будет обрабатывать Презентер. Разметка берётся из темплейтов `index.html` и повторяет макет в фигме — `Yandex — Веб-ларёк` (см. ссылку в материалах курса: `https://www.figma.com/design/92C0vV1ZCsVpgN9cH2DZ2d/Yandex--Веб-ларёк-?node-id=201-9445&p=f`).
+
+### Общая база
+
+- `Component<T>` — базовый класс для всех UI-компонентов. Содержит контейнер и метод `render`, а также помощник `setImage`.
+
+### Карточки товара: общий родитель и 3 реализации
+
+- `CardBase<TCard>` — абстрактный родитель карточек.
+  - Ответственность: хранение ссылок на общие элементы (`.card__title`, `.card__image`, `.card__price`, `.card__category`), установка текста/картинок, подключение обработчиков кликов.
+  - Публичный API: `render(data: Partial<TCard>)`, `setTitle`, `setPrice`, `setCategory`, `setImage`, `setDisabled`.
+  - События:
+    - `card:open` — запросить открытие превью товара;
+    - `card:add` — добавить товар в корзину;
+    - `card:remove` — удалить товар из корзины.
+
+- `CatalogCard` — карточка в каталоге (темплейт `#card-catalog`). По клику на всю карточку эмитит `card:open`.
+  <template id="card-catalog">
+    <button class="gallery__item card">
+      <span class="card__category ..."></span>
+      <h2 class="card__title"></h2>
+      <img class="card__image" src="..." alt=""/>
+      <span class="card__price"></span>
+    </button>
+  </template>
+  ```
+
+- `PreviewCard` — полноразмерная карточка для модального окна (темплейт `#card-preview`). Кнопка «В корзину» эмитит `card:add`.
+  <template id="card-preview">
+    <div class="card card_full"> ... <button class="button card__button">В корзину</button> ... </div>
+  </template>
+
+- `BasketItemCard` — строка товара в корзине (темплейт `#card-basket`). Кнопка удаления эмитит `card:remove`.
+  <template id="card-basket">
+    <li class="basket__item card card_compact"> ... <button class="basket__item-delete card__button"></button></li>
+  </template>
+
+### Формы: общий родитель и 2 реализации
+
+- `FormBase<TValue>` — абстрактный родитель для всех форм.
+  - Ответственность: сбор и валидация значений, управление состоянием submit, показ ошибок.
+  - Публичный API: `render(data?: Partial<TValue>)`, `getValue()`, `setErrors(text)`, `setValid(boolean)`.
+  - События: `form:change`, `form:validate`, `form:submit`.
+
+- `OrderForm` — выбор способа оплаты + адрес (темплейт `#order`).
+  <template id="order">
+    <form class="form" name="order">...</form>
+  </template>
+  - Доп. событие: `payment:select` при выборе `card`/`cash`.
+
+- `ContactsForm` — email + телефон (темплейт `#contacts`).
+  <template id="contacts">
+    <form class="form" name="contacts">...</form>
+  </template>
+
+### Хедер
+
+- `Header` — логотип, кнопка корзины и счётчик.
+  - API: `setCounter(value: number)`, `setDisabled(disabled: boolean)`.
+  - Событие: `basket:open` при клике по кнопке корзины.
+  <header class="header"> ... <button class="header__basket"><span class="header__basket-counter">0</span></button> ... </header>
+
+### Галерея каталога
+
+- `Gallery` — контейнер списка карточек в `<main class="gallery">`.
+  - API: `setCatalog(items: HTMLElement[])`, `clear()`.
+  <main class="gallery"></main>
+
+### Корзина (контент модалки)
+
+- `Basket` — список товаров и итог, темплейт `#basket`.
+  - API: `setItems(items: HTMLElement[])`, `setTotal(price: number)`, `setSubmitDisabled(v: boolean)`.
+  - Событие: `basket:order` по клику «Оформить».
+  <template id="basket">...</template>
+
+### Модальное окно (без наследования)
+
+- `Modal` — единый контейнер для любого контента. От него нельзя наследоваться.
+  - API: `open(content: HTMLElement)`, `close()`, `setContent(content: HTMLElement)`.
+  - События: `modal:open`, `modal:close`.
+  <div class="modal" id="modal-container"> ... <div class="modal__content"></div> ... </div>
+
+### Экран успеха
+
+- `Success` — «Заказ оформлен», темплейт `#success`.
+  - API: `setTotal(price: number)`.
+  - Событие: `success:close` (кнопка «За новыми покупками!»).
+
+### События View → Presenter
+
+- `card:open` — `{ id: string }` — открыть превью товара.
+- `card:add` — `{ id: string }` — добавить товар в корзину.
+- `card:remove` — `{ id: string }` — удалить товар из корзины.
+- `basket:open` — открыть корзину.
+- `basket:order` — начать оформление.
+- `payment:select` — `{ payment: 'card' | 'cash' }` — выбор оплаты.
+- `form:change` — `{ form: 'order' | 'contacts', value: object }`.
+- `form:validate` — `{ form: 'order' | 'contacts', valid: boolean, errors?: string }`.
+- `form:submit` — `{ form: 'order' | 'contacts', value: object }`.
+- `modal:open` / `modal:close` — изменение состояния модалки.
+- `success:close` — закрыть экран успеха и вернуться в каталог.
+
+Все события описывают действия пользователя и не приводят к изменению данных сами по себе — изменения выполняет Презентер, вызывая методы моделей и повторно обновляя Представления.
